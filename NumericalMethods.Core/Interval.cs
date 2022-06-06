@@ -4,38 +4,39 @@ namespace NumericalMethods.Core
 {
 	public class Interval
 	{
-		public double A
-		{
-			get => a;
-			set
-			{
-				if(value > B)
-					throw new Exception("A must be less than B");
-
-				a = value;
-			}
-		}
-
-		private double a = double.MinValue;
-
-		public double B
-		{
-			get => b;
-			set
-			{
-				if(value < A)
-					throw new Exception("B must be greater than A");
-
-				b = value;
-
-			}
-		}
-
-		private double b = double.MaxValue;
+		private double _a = double.MinValue;
+		private double _b = double.MaxValue;
 		public Interval(double a, double b)
 		{
 			A = a;
 			B = b;
 		}
+		
+		public double A
+		{
+			get => _a;
+			set
+			{
+				if(value > B)
+					throw new Exception("A must be less than B");
+
+				_a = value;
+			}
+		}
+
+		public double B
+		{
+			get => _b;
+			set
+			{
+				if(value < A)
+					throw new Exception("B must be greater than A");
+
+				_b = value;
+
+			}
+		}
+
+		public double Length => Math.Abs(A - B);
 	}
 }

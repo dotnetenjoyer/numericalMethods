@@ -1,12 +1,12 @@
-using System;
-using NUnit.Framework;
+﻿using System;
 using NumericalMethods.Core;
 using NumericalMethods.Core.Methods;
 using NumericalMethods.Tests.Extensions;
+using NUnit.Framework;
 
 namespace NumericalMethods.Tests
 {
-	public class DichotomyTests
+	public class SecantTests
 	{
 		private readonly double _accuracy = 0.0001;
 		private readonly Func<double, double> _function = x => Math.Sin(x) + 2 * Math.Pow(x, 2) - 5;
@@ -16,29 +16,29 @@ namespace NumericalMethods.Tests
 		{
 			//arrange
 			var interval = new Interval(-5, 0);
-			var dichotomy = new Dichotomy(_function, interval, _accuracy);
-			
-			//act
-			var solve = dichotomy.Process();	
-			TestContext.Out.WriteLine($"{dichotomy.IterationCounter} iterated");
-			
-			//asssert
-			Assert.IsTrue(solve.EqualWithTolerance(-1.7302, _accuracy));
-		}
+			var secant = new Secant(_function, _accuracy, interval);
 
+			//act
+			var root = secant.Process();
+			TestContext.Out.WriteLine($"{secant.IterationCounter} iterated");
+
+			//assert
+			Assert.IsTrue(root.EqualWithTolerance(-1.7302, _accuracy));
+		}
+		
 		[Test]
 		public void ProcessWithIntervalOnPositiveAxis_ShouldPass()
 		{
 			//arrange
 			var interval = new Interval(0, 5);
-			var dichotomy = new Dichotomy(_function, interval, _accuracy);
+			var secant = new Secant(_function, _accuracy, interval);
 			
 			//act
-			var solve = dichotomy.Process();	
-			TestContext.Out.WriteLine($"{dichotomy.IterationCounter} iterated");
+			var root = secant.Process();	
+			TestContext.Out.WriteLine($"{secant.IterationCounter} iterated");
 			
 			//assert
-			Assert.IsTrue(solve.EqualWithTolerance(1.4163, _accuracy));
+			Assert.IsTrue(root.EqualWithTolerance(1.4163, _accuracy));
 		}
 
 		[Test]
@@ -46,10 +46,10 @@ namespace NumericalMethods.Tests
 		{
 			//arrange
 			var interval = new Interval(10, 20);
-			var dichotomy = new Dichotomy(_function, interval, _accuracy);
+			var secant = new Secant(_function, _accuracy, interval);
 			
 			//act
-			var exception = Assert.Throws<Exception>(() => dichotomy.Process());
+			var exception = Assert.Throws<Exception>(() => secant.Process());
 			TestContext.Out.WriteLine(exception?.Message);
 
 			//assert
@@ -57,4 +57,3 @@ namespace NumericalMethods.Tests
 		}
 	}
 }
-
