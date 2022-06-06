@@ -8,8 +8,8 @@ namespace NumericalMethods.Tests
 {
 	public class DichotomyTests
 	{
-		private readonly double _accuracy = 0.0001;
 		private readonly Func<double, double> _function = x => Math.Sin(x) + 2 * Math.Pow(x, 2) - 5;
+		private readonly double _accuracy = 0.0001;
 		
 		[Test]
 		public void ProcessWithIntervalOnNegativeAxis_ShouldPass()

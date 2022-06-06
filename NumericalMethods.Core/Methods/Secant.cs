@@ -27,26 +27,27 @@ namespace NumericalMethods.Core.Methods
 			if (!IntervalHasValue(interval))
 				throw new Exception("There is no root on a given interval");
 
+			double intersectionX = 0;
 			while (interval.Length > _accuracy)
 			{
-				var intersection = CalculateLineIntersection(interval);
+				intersectionX = CalculateLineIntersection(interval);
 
-				if (IsRootOfEquation(intersection))
+				if (IsAcceptableRootOfEquation(intersectionX))
 					break;
 				
 				_iterationCounter++;
 
-				if (_function(interval.A) * _function(intersection) > 0)
+				if (_function(interval.A) * _function(intersectionX) < 0)
 				{
-					interval.A = intersection;
+					interval.B = intersectionX;
 				}
 				else
 				{
-					interval.B = intersection;
+					interval.A = intersectionX;
 				}
 			}
 
-			return interval.A;
+			return intersectionX;
 		}
 		
 		private bool IntervalHasValue(Interval interval)
@@ -60,9 +61,10 @@ namespace NumericalMethods.Core.Methods
 				(_function(interval.A) - _function(interval.B));
 		}
 		
-		private bool IsRootOfEquation(double argument)
+		private bool IsAcceptableRootOfEquation(double argument)
 		{
-			return _function(argument).EqualWithTolerance(0, _accuracy);
+			var functionValue = _function(argument);
+			return functionValue.EqualWithTolerance(0, _accuracy);
 		}
 	}
 }
