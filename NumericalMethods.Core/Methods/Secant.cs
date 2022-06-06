@@ -5,60 +5,45 @@ namespace NumericalMethods.Core.Methods
 {
 	public class Secant
 	{
-		private readonly double _accuracy;
-		private readonly Interval _interval;
 		private readonly Func<double, double> _function;
+		private readonly double _accuracy;
 
-		private int _iterationCounter; 
+		private double _previousApproach;
+		private double _currentApproach;
 		
-		public Secant(Func<double, double> function, double accuracy, Interval interval)
+		private int _iterationCounter;
+
+		public Secant(Func<double, double> function, double accuracy, double zeroApproach, double firstApproach)
 		{
 			_function = function;
 			_accuracy = accuracy;
-			_interval = interval;
+			_previousApproach = zeroApproach;
+			_currentApproach = firstApproach;
 		}
 
 		public int IterationCounter => _iterationCounter;
 
 		public double Process()
 		{
-			Interval interval = new (_interval.A, _interval.B);
+			double nextApproach;
 
-			if (!IntervalHasValue(interval))
-				throw new Exception("There is no root on a given interval");
-
-			double intersectionX = 0;
-			while (interval.Length > _accuracy)
+			do
 			{
-				intersectionX = CalculateLineIntersection(interval);
+				nextApproach = CalculateNextApproximation();
 
-				if (IsAcceptableRootOfEquation(intersectionX))
-					break;
+				_previousApproach = _currentApproach;
+				_currentApproach = nextApproach;
 				
 				_iterationCounter++;
+			} while (!IsAcceptableRootOfEquation(nextApproach));
 
-				if (_function(interval.A) * _function(intersectionX) < 0)
-				{
-					interval.B = intersectionX;
-				}
-				else
-				{
-					interval.A = intersectionX;
-				}
-			}
-
-			return intersectionX;
-		}
-		
-		private bool IntervalHasValue(Interval interval)
-		{
-			return _function(interval.A) * _function(interval.B) < 0;
+			return nextApproach;
 		}
 
-		private double CalculateLineIntersection(Interval interval)
+		private double CalculateNextApproximation()
 		{
-			return interval.A - _function(interval.A) * (interval.A - interval.B) /
-				(_function(interval.A) - _function(interval.B));
+			return _currentApproach - _function(_currentApproach) * (_currentApproach - _previousApproach) /
+				(_function(_currentApproach) - _function(_previousApproach));
 		}
 		
 		private bool IsAcceptableRootOfEquation(double argument)

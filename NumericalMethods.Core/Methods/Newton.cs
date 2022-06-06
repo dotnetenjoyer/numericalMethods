@@ -40,14 +40,10 @@ namespace NumericalMethods.Core.Methods
 				currentApproximation = _interval.B;
 			}
 
-			while (true)
+			while (!IsAcceptableRootOfEquation(currentApproximation))
 			{
-				if (IsAcceptableRootOfEquation(currentApproximation))
-					break;
-
-				_iterationCounter++;
-
 				currentApproximation = CalculateNextApproximation(currentApproximation);
+				_iterationCounter++;
 			}
 
 			return currentApproximation;

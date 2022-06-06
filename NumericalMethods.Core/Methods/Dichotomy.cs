@@ -31,9 +31,8 @@ namespace NumericalMethods.Core.Methods
 				if (IsRootOfEquation(midpoint))
 					break;
 
-				_iterationCounter++;
 				midpoint = (interval.A + interval.B) / 2;
-					
+
 				if (_function(midpoint) * _function(interval.A) > 0)
 				{
 					interval.A = midpoint;
@@ -42,6 +41,8 @@ namespace NumericalMethods.Core.Methods
 				{
 					interval.B = midpoint;
 				}
+
+				_iterationCounter++;
 			}
 
 			return midpoint;
