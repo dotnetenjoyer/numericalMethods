@@ -9,5 +9,7 @@ namespace NumericalMethods.Tests.Extensions
 			var difference = Math.Abs(value - other);
 			return tolerance > difference;
 		}
+		
+		public static double ReverseMark(this double value) => -value;
 	}
 }
