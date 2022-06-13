@@ -1,90 +1,97 @@
 ﻿using System;
-using NumericalMethods.Tests.Extensions;
 
 namespace NumericalMethods.Core.Methods
 {
 	public class SimpleIterations
 	{
-		private readonly double[,] _coefficientMatrix;
-		private readonly double[] _heterogeneities;
-		private readonly double _accuracy;
+		protected readonly double[,] Matrix;
+		protected readonly double Accuracy;
 
-		private double[] _currentApproximation;
-		private double[] _previousApproximation;
-
-		private int _iterationCounter; 
+		protected double[] CurrentApproximateRoots;
+		protected double[] PreviousApproximateRoots;
 		
-		public SimpleIterations(double[,] coefficientMatrix, double[] heterogeneities, double accuracy)
+		protected int _iterationCounter; 
+		
+		public SimpleIterations(double[,] matrix, double accuracy)
 		{
-			_coefficientMatrix = coefficientMatrix;
-			_heterogeneities = heterogeneities;
-			_accuracy = accuracy;
+			Matrix = matrix;
+			Accuracy = accuracy;
+			CurrentApproximateRoots = new double[NumberOfUnknown];
+			PreviousApproximateRoots = new double[NumberOfUnknown];
 		}
 
 		public int IterationCounter => _iterationCounter;
-		private int _numberOfUnknowns => _coefficientMatrix.GetLength(1);
+		protected int NumberOfUnknown => Matrix.GetLength(0);
 
 		public double[] Process()
 		{
-			CalculateZeroApproximations();
-		
+			// var matrixNorm = CalculateMatrixNorm();
+
+			// if (matrixNorm > 1)
+			// 	throw new Exception("The norm of matrix is greater than one!");
+			//
 			do
 			{
-				CalculateNextApproximation();
+				CalculateNewApproximation();
 				_iterationCounter++;
-			} while (!AreCurrentApproximationAcceptableEquationRoot());
-		
-			return _currentApproximation;
-		}
-
-		private bool AreCurrentApproximationAcceptableEquationRoot()
-		{
-			bool result = true;
-			double[] errors = new double[_currentApproximation.Length];
+			} while (AreApproximateRootsSatisfyAccuracy() == false);
 			
-			for (int i = 0; i < _currentApproximation.Length; i++)
-			{
-				double error = Math.Abs(_currentApproximation[i] - _previousApproximation[i]) / Math.Abs(_currentApproximation[i]);
-				errors[i] = error;
-				result &=  error < _accuracy;
-			}
-
-			return result;
+			return PreviousApproximateRoots;
 		}
-		
-		private void CalculateZeroApproximations()
+
+		private double CalculateMatrixNorm()
 		{
-			var zeroApproximations = new double[_numberOfUnknowns];
+			double matrixNorm = double.NegativeInfinity;
 			
-			for (int i = 0; i < _numberOfUnknowns; i++)
+			for (int i = 0; i < NumberOfUnknown; i++)
 			{
-				zeroApproximations[i] = _heterogeneities[i] / _coefficientMatrix[i, i];
-			}
-
-			_currentApproximation = zeroApproximations;
-		}
-
-		private void CalculateNextApproximation()
-		{
-			var nextApproximation = new double[_numberOfUnknowns];
-
-			for (int i = 0; i < _numberOfUnknowns; i++)
-			{
-				double sum = _heterogeneities[i];
-
-				for (int j = 0; j < _numberOfUnknowns; j++)
+				double sum = 0;
+				
+				for (int j = 0; j < NumberOfUnknown; j++)
 				{
-					if (i == j)
-						continue;
-
-					sum +=  _coefficientMatrix[i, j].ReverseMark() * _currentApproximation[j];
+					sum += Math.Abs(Matrix[i, j]);
 				}
 
-				nextApproximation[i] = sum / _coefficientMatrix[i, i];
-			}			
+				if (sum > matrixNorm)
+					matrixNorm = sum;
+			}
 
-			_previousApproximation = _currentApproximation;
-			_currentApproximation = nextApproximation;
+			return matrixNorm;
+		}
+		
+		private  bool AreApproximateRootsSatisfyAccuracy()
+		{
+			bool result = true;
+				
+			for (int i = 0; i < NumberOfUnknown; i++)
+			{
+				double error = Math.Abs(CurrentApproximateRoots[i] - PreviousApproximateRoots[i]) / Math.Abs(CurrentApproximateRoots[i]);
+				result &=  error < Accuracy;
+			}
+			
+			return result;
+		} 
+
+		protected virtual void CalculateNewApproximation()
+		{
+			var newApproximateRoots = new double[NumberOfUnknown];
+		
+			for (int i = 0; i < NumberOfUnknown; i++)
+			{
+				double sum = 0;
+
+				for (int j = 0; j < Matrix.GetLength(1); j++)
+				{
+					sum += j < NumberOfUnknown
+						? Matrix[i, j] * CurrentApproximateRoots[j]
+						: Matrix[i, j];
+				}
+
+				newApproximateRoots[i] = sum;
+			}			
+		
+			PreviousApproximateRoots = CurrentApproximateRoots;
+			CurrentApproximateRoots = newApproximateRoots;
 		}
 	}
 }
