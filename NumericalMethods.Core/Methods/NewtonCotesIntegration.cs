@@ -17,6 +17,7 @@ namespace NumericalMethods.Core.Methods
 
 		public double Process()
 		{
+			//TODO: Wrong implementation, redo with newton cotes coefficients			
 			var points = new Point[]
 			{
 				new (_interval.A, _function(_interval.A)),
