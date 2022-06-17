@@ -24,11 +24,11 @@ namespace NumericalMethods.Tests
 
 			//act
 			var interpolationPolynomial = lagrangianPolynomials.Process();
-			var error = _function(10.5) - interpolationPolynomial(10.5);
+			var error = Math.Abs(_function(10.5) - interpolationPolynomial(10.5));
 			TestContext.Out.WriteLine($"Error: {error}");
 			
 			//assert
-			Assert.IsTrue(Math.Abs(error) < 0.01);
+			Assert.IsTrue(error < 0.01);
 		}
 	}
 }

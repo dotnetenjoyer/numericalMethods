@@ -21,9 +21,9 @@ namespace NumericalMethods.Core.Methods
 		{
 			double integral = 0;
 
-			for (int i = 0; i < _numberOfStep; i++)
+			for (int i = 1; i < _numberOfStep; i++)
 			{
-				integral += _step * _function(_interval.A + _step * i);
+				integral += _step * _function(_interval.A + _step * (i - 0.5));
 			}
 
 			return integral;

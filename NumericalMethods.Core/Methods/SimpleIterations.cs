@@ -25,11 +25,11 @@ namespace NumericalMethods.Core.Methods
 
 		public double[] Process()
 		{
-			// var matrixNorm = CalculateMatrixNorm();
+			var matrixNorm = CalculateMatrixNorm();
 
-			// if (matrixNorm > 1)
-			// 	throw new Exception("The norm of matrix is greater than one!");
-			//
+			if (matrixNorm > 1)
+				throw new Exception("The norm of matrix is greater than one, convert to convenient iteration form!");
+			
 			do
 			{
 				CalculateNewApproximation();
@@ -62,11 +62,13 @@ namespace NumericalMethods.Core.Methods
 		private  bool AreApproximateRootsSatisfyAccuracy()
 		{
 			bool result = true;
-				
+
+			var matrixNorm = CalculateMatrixNorm();
 			for (int i = 0; i < NumberOfUnknown; i++)
 			{
-				double error = Math.Abs(CurrentApproximateRoots[i] - PreviousApproximateRoots[i]) / Math.Abs(CurrentApproximateRoots[i]);
-				result &=  error < Accuracy;
+				// double error = Math.Abs(CurrentApproximateRoots[i] - PreviousApproximateRoots[i]) / Math.Abs(CurrentApproximateRoots[i]);
+				double error = matrixNorm / (1 - matrixNorm) * Math.Abs(CurrentApproximateRoots[i] - PreviousApproximateRoots[i]);
+				result &=  Math.Abs(error) < Accuracy;
 			}
 			
 			return result;
